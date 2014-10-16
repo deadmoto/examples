@@ -31,8 +31,8 @@ for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
         condition = expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'forum_topic_input'))
         forum_topic_input = wait.until(condition)
         forum_topic_input.send_keys(topic)
-        text = '1:1 (if your card worth more).\n'
-        text += '1:2, 2:3, 3:4, 4:5 (any other cards).'
+        text = 'I have cards you need and expect just a little bit more value in return.\n'
+        text += 'I do not accept coupons, smiles or backgrounds.'
         driver.find_element_by_class_name('forumtopic_reply_textarea').send_keys(text)
         driver.find_element_by_class_name('btn_green_white_innerfade').click()
         condition = expected_conditions.invisibility_of_element_located((By.CLASS_NAME, 'forum_topic_input'))
