@@ -18,8 +18,6 @@ for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
     topic += ' [W] Any other cards 1:1+'
     print(game, topic)
     url = "http://steamcommunity.com/app/{}/tradingforum/".format(game)
-    if game == '238460':
-        url = 'http://steamcommunity.com/app/238460/discussions/8/'
     driver.get(url)
     try:
         driver.find_element_by_id('age_gate_btn_continue').click()
