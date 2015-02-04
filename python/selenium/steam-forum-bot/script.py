@@ -5,18 +5,22 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
 from inventory import Inventory
+from log import log
 
 
 profile = webdriver.FirefoxProfile("./firefox")
 driver = webdriver.Firefox(firefox_profile=profile)
 games = Inventory.games()
 for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
+    if log.check(game):
+        print 'Topic for game #{} was created less than 24 hours ago'.format(game)
+        continue
+    print 'Processing game #{}'.format(game)
     topic = '[H] ' + games[game].pop()
     while len(games[game]) > 0:
         topic += ', '
         topic += games[game].pop()
     topic += ' [W] Any other cards 1:1+'
-    print(game, topic)
     url = "http://steamcommunity.com/app/{}/tradingforum/".format(game)
     driver.get(url)
     try:
@@ -35,9 +39,11 @@ for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
         driver.find_element_by_class_name('btn_green_white_innerfade').click()
         condition = expected_conditions.invisibility_of_element_located((By.CLASS_NAME, 'forum_topic_input'))
         wait.until(condition)
+        log.insert(game)
+        print 'Created a topic for game #{}: {}'.format(game, topic.encode('utf_8'))
     except NoSuchElementException:
         print('Failed to create topic for game {}!'.format(game))
         print('URL: {}'.format(url))
     except TimeoutException:
-        print('You cannot create one more topic!')
+        print 'You cannot create one more topic!'.format(game)
 driver.quit()
