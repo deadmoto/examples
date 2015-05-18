@@ -46,7 +46,7 @@ class Bot(object):
             condition = expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'forum_topic_input'))
             forum_topic_input = wait.until(condition)
             forum_topic_input.send_keys(topic)
-            text = 'I have cards you need and expect just a little bit more value in return.\n'
+            text = 'I have cards you may need and expect just a bit more value in return.\n'
             text += 'I do not accept coupons, smiles or backgrounds.'
             self.driver.find_element_by_class_name('forumtopic_reply_textarea').send_keys(text)
             self.driver.find_element_by_class_name('btn_green_white_innerfade').click()
