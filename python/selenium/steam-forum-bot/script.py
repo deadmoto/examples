@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from inventory import Inventory
 from log import log
 
 
@@ -75,8 +74,3 @@ class Bot(object):
         for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
             self.processone(game)
         self.driver.quit()
-
-
-games = Inventory.games()
-bot = Bot()
-bot.process(games)
