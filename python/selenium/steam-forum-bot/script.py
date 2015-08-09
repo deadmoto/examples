@@ -24,14 +24,14 @@ class Bot(object):
                 print('Topic for game #{} cannot be created till {}'.format(game, expires[0]))
                 return True
 
-    def processone(self, game):
+    def processone(self, game, items):
         if self.expired(game):
             return
         print('Processing game #{}'.format(game))
-        topic = '[H] ' + games[game].pop()
-        while len(games[game]) > 0:
+        topic = '[H] ' + items.pop()
+        while len(items) > 0:
             topic += ', '
-            topic += games[game].pop()
+            topic += items.pop()
         topic += ' [W] Any other cards 1:1+'
         url = "http://steamcommunity.com/app/{}/tradingforum/".format(game)
         self.driver.get(url)
@@ -72,5 +72,5 @@ class Bot(object):
 
     def process(self, games):
         for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
-            self.processone(game)
+            self.processone(game, games[game])
         self.driver.quit()
