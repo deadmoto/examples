@@ -3,7 +3,7 @@ from re import search
 from time import strptime, mktime
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, UnexpectedAlertPresentException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
@@ -69,6 +69,8 @@ class Bot(object):
                                                                             datetime.fromtimestamp(mktime(expires))))
             except NoSuchElementException:
                 print('Topic for game #{} was not created!'.format(game))
+        except UnexpectedAlertPresentException as e:
+            print(e)
 
     def process(self, games):
         for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
