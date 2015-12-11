@@ -16,6 +16,7 @@ class Bot(object):
         super(Bot, self).__init__()
         profile = webdriver.FirefoxProfile("./firefox")
         self.driver = webdriver.Firefox(firefox_profile=profile)
+        self.driver.set_window_position(0, 1200)
 
     def expired(self, game):
         expires = log.select(game)
