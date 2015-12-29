@@ -29,11 +29,11 @@ class Bot(object):
         if self.expired(game):
             return
         print('Processing game #{}'.format(game))
-        topic = '[H] ' + items.pop()
-        while len(items) > 0:
-            topic += ', '
-            topic += items.pop()
-        topic += ' [W] Any other cards 1:1+'
+        cards = ', '.join(items)
+        if game in [u'550', u'730']:
+            topic = u'[H] {} [W] Foils'.format(cards)
+        else:
+            topic = u'[H] {} [W] Any other cards 1:1+'.format(cards)
         url = "http://steamcommunity.com/app/{}/tradingforum/".format(game)
         self.driver.get(url)
         try:
