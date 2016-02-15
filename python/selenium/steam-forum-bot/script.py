@@ -11,6 +11,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from log import log
 
 
+class PostingTooFrequentlyException(Exception):
+    pass
+
+
 class Bot(object):
     def __init__(self):
         super(Bot, self).__init__()
@@ -18,15 +22,27 @@ class Bot(object):
         self.driver = webdriver.Firefox(firefox_profile=profile)
         self.driver.set_window_position(0, 1200)
 
-    def expired(self, game):
+    @staticmethod
+    def is_expired(game):
         expires = log.select(game)
         if expires is not None:
             if expires[0] > datetime.now():
-                print('Topic for game #{} cannot be created till {}'.format(game, expires[0]))
                 return True
 
-    def processone(self, game, items):
-        if self.expired(game):
+    def check_error_message(self, game):
+        text = self.driver.find_element_by_class_name('forum_newtopic_error').text
+        if 'You\'ve been posting too frequently' in text:
+            raise PostingTooFrequentlyException(text)
+        error = self.driver.find_element_by_class_name('forum_newtopic_error').text
+        if 'There is a limit on how frequently you can post in this forum' in error:
+            match = search('[\d]{1,2}\s[\w]{3}\s@\s[\d]{1,2}:[\d]{2}[\w]{2}', error)
+            group = match.group(0)
+            expires = strptime('{} {}'.format(datetime.now().year, group), '%Y %d %b @ %I:%M%p')
+            log.insert(game, datetime.fromtimestamp(mktime(expires)))
+            print('Topic for game #{} cannot be created until {}'.format(game, datetime.fromtimestamp(mktime(expires))))
+
+    def post_topic(self, game, items):
+        if self.is_expired(game):
             return
         print('Processing game #{}'.format(game))
         cards = ', '.join(items)
@@ -59,15 +75,7 @@ class Bot(object):
             print('URL: {}'.format(url))
         except TimeoutException:
             try:
-                error = self.driver.find_element_by_class_name('forum_newtopic_error').text
-                match = search('[\w]{3}\s[\d]{1,2}\s@\s[\d]{1,2}:[\d]{2}[\w]{2}', error)
-                if match is None:
-                    raise NoSuchElementException
-                group = match.group(0)
-                expires = strptime('{} {}'.format(datetime.now().year, group), '%Y %b %d @ %I:%M%p')
-                log.insert(game, datetime.fromtimestamp(mktime(expires)))
-                print('Topic for game #{} cannot be created till {}'.format(game,
-                                                                            datetime.fromtimestamp(mktime(expires))))
+                self.check_error_message(game)
             except NoSuchElementException:
                 print('Topic for game #{} was not created!'.format(game))
         except UnexpectedAlertPresentException as e:
@@ -75,5 +83,5 @@ class Bot(object):
 
     def process(self, games):
         for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
-            self.processone(game, games[game])
+            self.post_topic(game, games[game])
         self.driver.quit()
