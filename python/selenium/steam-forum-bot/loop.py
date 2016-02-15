@@ -11,4 +11,4 @@ while True:
     except Exception as e:
         print e.message
     finally:
-        sleep(60 * 15)
+        sleep(60 * 1)
