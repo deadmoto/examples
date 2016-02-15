@@ -82,6 +82,8 @@ class Bot(object):
             print(e)
 
     def process(self, games):
-        for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
-            self.post_topic(game, games[game])
-        self.driver.quit()
+        try:
+            for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
+                self.post_topic(game, games[game])
+        finally:
+            self.driver.quit()
