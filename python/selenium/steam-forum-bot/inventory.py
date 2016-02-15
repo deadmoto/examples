@@ -4,6 +4,9 @@ import requests
 
 
 class Inventory:
+    def __init__(self):
+        pass
+
     @staticmethod
     def games():
         result = defaultdict(list)
