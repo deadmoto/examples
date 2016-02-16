@@ -11,5 +11,4 @@ while True:
     except Exception as e:
         print e.message
     finally:
-        del bot
         sleep(60 * 1)

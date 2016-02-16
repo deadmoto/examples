@@ -20,10 +20,6 @@ class Bot(object):
         super(Bot, self).__init__()
         self._driver = None
 
-    def __del__(self):
-        if self._driver is not None:
-            self._driver.quit()
-
     @property
     def driver(self):
         if self._driver is None:
@@ -31,6 +27,11 @@ class Bot(object):
             self._driver = webdriver.Firefox(firefox_profile=profile)
             self._driver.set_window_position(0, 1200)
         return self._driver
+
+    @driver.deleter
+    def driver(self):
+        if self._driver is not None:
+            self._driver.quit()
 
     @staticmethod
     def topic_expired(game):
@@ -93,5 +94,8 @@ class Bot(object):
             print(e)
 
     def process(self, games):
-        for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
-            self.post_topic(game, games[game])
+        try:
+            for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
+                self.post_topic(game, games[game])
+        finally:
+            del self.driver
