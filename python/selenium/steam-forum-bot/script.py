@@ -23,11 +23,12 @@ class Bot(object):
         self.driver.set_window_position(0, 1200)
 
     @staticmethod
-    def is_expired(game):
+    def topic_expired(game):
         expires = log.select(game)
         if expires is not None:
             if expires[0] > datetime.now():
-                return True
+                return False
+        return True
 
     def check_error_message(self, game):
         text = self.driver.find_element_by_class_name('forum_newtopic_error').text
@@ -42,7 +43,7 @@ class Bot(object):
             print('Topic for game #{} cannot be created until {}'.format(game, datetime.fromtimestamp(mktime(expires))))
 
     def post_topic(self, game, items):
-        if self.is_expired(game):
+        if not self.topic_expired(game):
             return
         print('Processing game #{}'.format(game))
         cards = ', '.join(items)
@@ -82,8 +83,6 @@ class Bot(object):
             print(e)
 
     def process(self, games):
-        try:
-            for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
-                self.post_topic(game, games[game])
-        finally:
-            self.driver.quit()
+        for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
+            self.post_topic(game, games[game])
+        self.driver.quit()
