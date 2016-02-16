@@ -18,9 +18,7 @@ class PostingTooFrequentlyException(Exception):
 class Bot(object):
     def __init__(self):
         super(Bot, self).__init__()
-        profile = webdriver.FirefoxProfile("./firefox")
-        self.driver = webdriver.Firefox(firefox_profile=profile)
-        self.driver.set_window_position(0, 1200)
+        self.driver = None
 
     @staticmethod
     def topic_expired(game):
@@ -29,6 +27,16 @@ class Bot(object):
             if expires[0] > datetime.now():
                 return False
         return True
+
+    def init_driver(self):
+        if self.driver is None:
+            profile = webdriver.FirefoxProfile("./firefox")
+            self.driver = webdriver.Firefox(firefox_profile=profile)
+            self.driver.set_window_position(0, 1200)
+
+    def destroy_driver(self):
+        if self.driver is not None:
+            self.driver.quit()
 
     def check_error_message(self, game):
         text = self.driver.find_element_by_class_name('forum_newtopic_error').text
@@ -45,6 +53,7 @@ class Bot(object):
     def post_topic(self, game, items):
         if not self.topic_expired(game):
             return
+        self.init_driver()
         print('Processing game #{}'.format(game))
         cards = ', '.join(items)
         if game in [u'550', u'730']:
@@ -87,4 +96,4 @@ class Bot(object):
             for game in sorted(games.keys(), key=lambda g: len(games[g]), reverse=True):
                 self.post_topic(game, games[game])
         finally:
-            self.driver.quit()
+            self.destroy_driver()
