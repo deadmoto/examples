@@ -1,1 +1,5 @@
 include 'hackerrank:pattern'
+include 'princeton:percolation'
+include 'princeton:deque'
+include 'princeton:collinear'
+include 'princeton:8puzzle'
