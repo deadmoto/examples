@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+
+task sourcesZip(type: Zip) {
+    archiveName = "8puzzle.zip"
+    from('src/main/java') {
+        include '**'
+    }
+}
+
+assemble.dependsOn 'sourcesZip'
+
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
