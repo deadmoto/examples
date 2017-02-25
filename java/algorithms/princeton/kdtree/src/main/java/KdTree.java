@@ -83,6 +83,9 @@ public class KdTree {
         if (point == null) {
             throw new NullPointerException();
         }
+        if (root == null) {
+            return null;
+        }
         Node nearest = root;
         LinkedList<Node> nodes = new LinkedList<>();
         nodes.add(root.left);
@@ -95,10 +98,8 @@ public class KdTree {
             if (node.point.distanceSquaredTo(point) < nearest.point.distanceSquaredTo(point)) {
                 nearest = node;
             }
-            if (node.left != null) {
+            if (node.rect.distanceSquaredTo(point) < nearest.point.distanceSquaredTo(point)) {
                 nodes.add(node.left);
-            }
-            if (node.right != null) {
                 nodes.add(node.right);
             }
         }
@@ -151,7 +152,7 @@ public class KdTree {
                 } else {
                     return left.insert(point);
                 }
-            } else {
+            } else if (cmp < 0) {
                 if (right == null) {
                     right = child();
                     right.rect = right();
@@ -161,6 +162,7 @@ public class KdTree {
                     return right.insert(point);
                 }
             }
+            return false;
         }
 
         abstract int compareTo(Point2D point);
@@ -175,8 +177,15 @@ public class KdTree {
     private static class HNode extends Node {
 
         @Override
-        int compareTo(Point2D point) {
-            return Double.compare(point.y(), this.point.y());
+        int compareTo(Point2D that) {
+            int compareY = Double.compare(that.y(), point.y());
+            if (compareY == 0) {
+                int compareX = Double.compare(that.x(), point.x());
+                if (compareX != 0) {
+                    return -1;
+                }
+            }
+            return compareY;
         }
 
         @Override
@@ -199,7 +208,14 @@ public class KdTree {
 
         @Override
         int compareTo(Point2D that) {
-            return Double.compare(this.point.x(), that.x());
+            int compareX = Double.compare(point.x(), that.x());
+            if (compareX == 0) {
+                int compareY = Double.compare(point.y(), that.y());
+                if (compareY != 0) {
+                    return -1;
+                }
+            }
+            return compareX;
         }
 
         @Override
