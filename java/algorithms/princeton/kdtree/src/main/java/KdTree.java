@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 public class KdTree {
 
@@ -18,66 +19,80 @@ public class KdTree {
     }
 
     public void insert(Point2D point) {
-        if (point == null) throw new NullPointerException();
+        if (point == null) {
+            throw new NullPointerException();
+        }
         if (root == null) {
             root = new VNode();
             root.rect = new RectHV(0, 0, 1, 1);
             root.point = point;
+            size++;
         } else {
-            root.insert(point);
+            if (root.insert(point)) {
+                size++;
+            }
         }
-        size++;
     }
 
-    public boolean contains(Point2D p) {
-        if (p == null) throw new NullPointerException();
-        // does the set contain point p?
+    public boolean contains(Point2D point) {
+        if (point == null) {
+            throw new NullPointerException();
+        }
+        LinkedList<Node> nodes = new LinkedList<>();
+        nodes.add(root);
+        while (nodes.size() > 0) {
+            Node node = nodes.remove();
+            if (node == null) {
+                continue;
+            }
+            if (node.rect.contains(point)) {
+                if (node.point.compareTo(point) == 0) {
+                    return true;
+                } else {
+                    nodes.add(node.left);
+                    nodes.add(node.right);
+                }
+            }
+        }
         return false;
     }
 
-    public void draw() {
+    public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null) {
+            throw new NullPointerException();
+        }
+        TreeSet<Point2D> range = new TreeSet<>();
         LinkedList<Node> nodes = new LinkedList<>();
         nodes.add(root);
         while (nodes.size() > 0) {
             Node node = nodes.remove();
             if (node != null) {
-                StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.setPenRadius(0.01);
-                node.point.draw();
-
-                if (node instanceof HNode) {
-                    StdDraw.setPenColor(StdDraw.RED);
-                    StdDraw.setPenRadius();
-                    StdDraw.line(node.rect.xmin(), node.point.y(), node.rect.xmax(), node.point.y());
+                if (rect.contains(node.point)) {
+                    range.add(node.point);
                 }
-
-                if (node instanceof VNode) {
-                    StdDraw.setPenColor(StdDraw.BLUE);
-                    StdDraw.setPenRadius();
-                    StdDraw.line(node.point.x(), node.rect.ymin(), node.point.x(), node.rect.ymax());
+                if (node.rect.intersects(rect)) {
+                    nodes.add(node.left);
+                    nodes.add(node.right);
                 }
-
-                nodes.add(node.left);
-                nodes.add(node.right);
             }
         }
-    }
-
-    public Iterable<Point2D> range(RectHV rect) {
-        if (rect == null) throw new NullPointerException();
-        // all points that are inside the rectangle
-        return null;
+        return range;
     }
 
     public Point2D nearest(Point2D point) {
-        if (point == null) throw new NullPointerException();
+        if (point == null) {
+            throw new NullPointerException();
+        }
         Node nearest = root;
         LinkedList<Node> nodes = new LinkedList<>();
         nodes.add(root.left);
         nodes.add(root.right);
         while (nodes.size() > 0) {
             Node node = nodes.remove();
-            if (node == null) continue;if (node.point.distanceSquaredTo(point) < nearest.point.distanceSquaredTo(point)) {
+            if (node == null) {
+                continue;
+            }
+            if (node.point.distanceSquaredTo(point) < nearest.point.distanceSquaredTo(point)) {
                 nearest = node;
             }
             if (node.left != null) {
@@ -90,29 +105,60 @@ public class KdTree {
         return nearest.point;
     }
 
-    private static abstract class Node {
+    public void draw() {
+        LinkedList<Node> nodes = new LinkedList<>();
+        nodes.add(root);
+        while (nodes.size() > 0) {
+            Node node = nodes.remove();
+            if (node != null) {
+                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.setPenRadius(0.01);
+                node.point.draw();
+
+                if (node.getClass().equals(HNode.class)) {
+                    StdDraw.setPenColor(StdDraw.RED);
+                    StdDraw.setPenRadius();
+                    StdDraw.line(node.rect.xmin(), node.point.y(), node.rect.xmax(), node.point.y());
+                }
+
+                if (node.getClass().equals(VNode.class)) {
+                    StdDraw.setPenColor(StdDraw.BLUE);
+                    StdDraw.setPenRadius();
+                    StdDraw.line(node.point.x(), node.rect.ymin(), node.point.x(), node.rect.ymax());
+                }
+
+                nodes.add(node.left);
+                nodes.add(node.right);
+            }
+        }
+    }
+
+    private abstract static class Node {
 
         RectHV rect;
         Point2D point;
         Node left;
         Node right;
 
-        public void insert(Point2D point) {
-            if (compareTo(point) > 0) {
+        public boolean insert(Point2D point) {
+            int cmp = compareTo(point);
+            if (cmp > 0) {
                 if (left == null) {
                     left = child();
                     left.rect = left();
                     left.point = point;
+                    return true;
                 } else {
-                    left.insert(point);
+                    return left.insert(point);
                 }
             } else {
                 if (right == null) {
                     right = child();
                     right.rect = right();
                     right.point = point;
+                    return true;
                 } else {
-                    right.insert(point);
+                    return right.insert(point);
                 }
             }
         }
