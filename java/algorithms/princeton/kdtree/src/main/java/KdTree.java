@@ -6,8 +6,8 @@ import java.util.LinkedList;
 
 public class KdTree {
 
-    Node root;
-    int size;
+    private Node root;
+    private int size;
 
     public boolean isEmpty() {
         return root == null;
