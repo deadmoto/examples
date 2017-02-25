@@ -1,5 +1,10 @@
 apply plugin: 'java'
+apply plugin: 'checkstyle'
 
+checkstyle {
+    configFile = file("$projectDir/../checkstyle-coursera.xml")
+    toolVersion = '7.4'
+}
 
 task sourcesZip(type: Zip) {
     archiveName = "kdtree.zip"
