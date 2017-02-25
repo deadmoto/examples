@@ -71,23 +71,20 @@ public class KdTree {
 
     public Point2D nearest(Point2D point) {
         if (point == null) throw new NullPointerException();
-        Node nearest = this.root;
+        Node nearest = root;
         LinkedList<Node> nodes = new LinkedList<>();
         nodes.add(root.left);
         nodes.add(root.right);
         while (nodes.size() > 0) {
             Node node = nodes.remove();
-            if (node == null) continue;
-            if (node.point.distanceTo(point) < nearest.point.distanceTo(point)) {
+            if (node == null) continue;if (node.point.distanceSquaredTo(point) < nearest.point.distanceSquaredTo(point)) {
                 nearest = node;
             }
             if (node.left != null) {
-                nodes.add(node.left.left);
-                nodes.add(node.left.right);
+                nodes.add(node.left);
             }
             if (node.right != null) {
-                nodes.add(node.right.left);
-                nodes.add(node.right.right);
+                nodes.add(node.right);
             }
         }
         return nearest.point;
