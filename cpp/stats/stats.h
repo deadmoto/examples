@@ -4,6 +4,9 @@
  * stats.h
  */
 
+#ifndef __STATS_H__
+#define __STATS_H__
+
 /*
  * Sorts data array and writes statistics into global variables.
  *
@@ -30,3 +33,5 @@ void print_stats(unsigned char *data, int size);
  * returns: nothing
  */
 void main();
+
+#endif /* __STATS_H__ */
