@@ -4,9 +4,6 @@
  * stats.h
  */
 
-#ifndef __STATS_H__
-#define __STATS_H__
-
 /*
  * Sorts data array and writes statistics into global variables.
  *
@@ -15,7 +12,7 @@
  *
  * returns: nothing
  */
-void stats(char *data, unsigned int size);
+void stats(unsigned char *data, int size);
 
 /*
  * Prints data array and statistics from global variables.
@@ -25,7 +22,7 @@ void stats(char *data, unsigned int size);
  *
  * returns: nothing
  */
-void print_stats(char *data, unsigned int size);
+void print_stats(unsigned char *data, int size);
 
 /*
  * Initializes data array and invokes stats() and print_stats() methods.
@@ -33,5 +30,3 @@ void print_stats(char *data, unsigned int size);
  * returns: nothing
  */
 void main();
-
-#endif /* __STATS_H__ */

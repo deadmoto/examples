@@ -4,15 +4,15 @@
  * stats.c
  */
 
-#include <printf.h>
+#include <stdio.h>
 #include "stats.h"
 
-char Mean;
-char Median;
-char Maximum;
-char Minimum;
+int mean;
+int median;
+int maximum;
+int minimum;
 
-void stats(char *data, unsigned int size) {
+void stats(unsigned char *data, int size) {
     int i = 0;
     int sum = 0;
     while (i < size) {
@@ -22,7 +22,7 @@ void stats(char *data, unsigned int size) {
             if (data[j] <= data[j - 1]) {
                 break;
             } else {
-                char temp = data[j - 1];
+                unsigned char temp = data[j - 1];
                 data[j - 1] = data[j];
                 data[j] = temp;
             }
@@ -30,31 +30,31 @@ void stats(char *data, unsigned int size) {
         }
         i++;
     }
-    Mean = sum / size;
+    mean = sum / size;
     int m = size / 2;
     if (m % 2 == 0) {
-        Median = (data[m - 1] + data[m]) / 2;
+        median = (data[m - 1] + data[m]) / 2;
     } else {
-        Median = data[m - 1] / 2;
+        median = data[m - 1] / 2;
     }
-    Maximum = data[0];
-    Minimum = data[size - 1];
+    maximum = data[0];
+    minimum = data[size - 1];
 }
 
-void print_stats(char *data, unsigned int size) {
+void print_stats(unsigned char *data, int size) {
     int i = 0;
     while (i < size) {
         printf("data[%.2d]: %4d\n", i, data[i]);
         i++;
     }
-    printf("Mean: %d\n", Mean);
-    printf("Median: %d\n", Median);
-    printf("Maximum: %d\n", Maximum);
-    printf("Minimum: %d\n", Minimum);
+    printf("Mean: %d\n", mean);
+    printf("Median: %d\n", median);
+    printf("Maximum: %d\n", maximum);
+    printf("Minimum: %d\n", minimum);
 }
 
 void main() {
-    char test[40] = {
+    unsigned char test[40] = {
             34, 201, 190, 154, 8, 194, 2, 6, 114, 88,
             45, 76, 123, 87, 25, 23, 200, 122, 150, 90,
             92, 87, 177, 244, 201, 6, 12, 60, 8, 2,
